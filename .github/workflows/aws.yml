@@ -48,6 +48,6 @@ jobs:
           aws eks update-kubeconfig --name Johnmax25
       - run: |
           envsubst < manifests/deployment.tmpl.yaml > manifests/deployment.yaml
-          cat deployment.yaml
-          
+          cat manifests/deployment.yaml
+
 
