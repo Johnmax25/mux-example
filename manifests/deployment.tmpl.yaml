@@ -16,6 +16,9 @@ spec:
     spec:
       containers:
       - name: guitar-app
-        image: ${ECR_REPOSITORY}:${IMAGE_TAG}
+        image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
         ports:
         - containerPort: 80
+
+        # guitar-app:
+        # 526860816879.dkr.ecr.us-west-2.amazonaws.com/guitar-app:latest
