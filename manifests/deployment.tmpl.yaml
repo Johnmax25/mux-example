@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: guitar-app
+  labels:
+    app: guitar-app
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: guitar-app
+  template:
+    metadata:
+      labels:
+        app: guitar-app
+    spec:
+      containers:
+      - name: guitar-app
+        image: ${ECR_REPOSITORY}:${IMAGE_TAG}
+        ports:
+        - containerPort: 80

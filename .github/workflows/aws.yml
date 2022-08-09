@@ -1,7 +1,7 @@
 name: github-actions
 on: [push]
 env: 
-  ECR_REPOSITORY: app
+  ECR_REPOSITORY: guitar-app
   SHORT_SHA: $(echo ${{ github.sha }} | cut -c 1-8)
   AWS_REGION: us-west-2
 jobs: 
@@ -47,5 +47,7 @@ jobs:
           sudo mv kubectl /usr/local/bin/
           aws eks update-kubeconfig --name Johnmax25
       - run: |
-          kubectl get pods -A
+          envsubst < manifests/deployment.tmpl.yaml > manifests/deployment.yaml
+          cat deployment.yaml
+          
 
