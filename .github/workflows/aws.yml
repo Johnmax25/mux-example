@@ -1,14 +1,16 @@
 name: github-actions
 on: [push]
 env: 
+  ECR_REGISTRY: 526860816879.dkr.ecr.us-west-2.amazonaws.com
   ECR_REPOSITORY: guitar-app
-  SHORT_SHA: $(echo ${{ github.sha }} | cut -c 1-8)
   AWS_REGION: us-west-2
 jobs: 
   update-deployment:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+      - name: Set env
+        run: echo "IMAGE_TAG=$(echo $GITHUB_SHA | cut -c 1-8)" >> $GITHUB_ENV
  #connecting to aws     
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -23,15 +25,13 @@ jobs:
  #  docker push
       - name: Build, tag, and push image to Amazon ECR
         id: build-image
-        env:
-          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
         run: |
           docker build \
           --tag ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest \
-          --tag ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.SHORT_SHA }} \
+          --tag ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} \
           .
           docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:latest
-          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.SHORT_SHA }}
+          docker push ${{ env.ECR_REGISTRY }}/${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
 #connecting to kubectl
       - name: Install and configure kubectl
@@ -48,6 +48,11 @@ jobs:
           aws eks update-kubeconfig --name Johnmax25
       - run: |
           envsubst < manifests/deployment.tmpl.yaml > manifests/deployment.yaml
-          cat manifests/deployment.yaml
-
+         # debugging
+         # cat manifests/deployment.yaml
+      - run: |
+          kubectl apply -f manifests/deployment.yaml
+      - run: |
+          kubectl get pods -A
+              
 
