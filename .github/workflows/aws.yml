@@ -52,7 +52,6 @@ jobs:
          # cat manifests/deployment.yaml
       - run: |
           kubectl apply -f manifests/deployment.yaml
+          kubectl apply -f manifests/service.yaml
       - run: |
           kubectl get pods -A
-              
-
