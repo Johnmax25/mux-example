@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"sync/atomic"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -16,8 +17,19 @@ var guitars = map[string]string{
 }
 
 func main() {
+	isReady := &atomic.Value{}
+	isReady.Store(false)
+	go func() {
+		log.Printf("Readyz probe is negative by default...")
+		time.Sleep(10 * time.Second)
+		isReady.Store(true)
+		log.Printf("Readyz probe is positive.")
+	}()
+
 	r := mux.NewRouter()
 	r.HandleFunc("/", RootHandler)
+	r.HandleFunc("/healthz", healthz)
+	r.HandleFunc("/readyz", readyz(isReady))
 
 	srv := &http.Server{
 		Handler: r,
@@ -37,4 +49,19 @@ func RootHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("<li>%s: %s</li>", k, v)))
 	}
 	w.Write([]byte("</ul></body></html>"))
+}
+// healthz is a liveness probe.
+func healthz(w http.ResponseWriter, _ *http.Request) {
+	w.WriteHeader(http.StatusOK)
+	
+}
+// readyz is a readiness probe.
+func readyz(isReady *atomic.Value) http.HandlerFunc {
+	return func(w http.ResponseWriter, _ *http.Request) {
+		if isReady == nil || !isReady.Load().(bool) {
+			http.Error(w, http.StatusText(http.StatusServiceUnavailable), http.StatusServiceUnavailable)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}
 }

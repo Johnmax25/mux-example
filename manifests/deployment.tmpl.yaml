@@ -19,6 +19,13 @@ spec:
         image: ${ECR_REGISTRY}/${ECR_REPOSITORY}:${IMAGE_TAG}
         ports:
         - containerPort: 8000
-
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8000
+        readinessProbe:
+          httpGet:
+            path: /readyz
+            port: 8000
         # guitar-app:
         # 526860816879.dkr.ecr.us-west-2.amazonaws.com/guitar-app:latest
