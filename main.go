@@ -13,6 +13,7 @@ var guitars = map[string]string{
 	"Fender": "$1000",
 	"Gibson": "$2000",
 	"Ibanez": "$3000",
+	"Johnny's Guitar": "$1,000,000",
 }
 
 func main() {
