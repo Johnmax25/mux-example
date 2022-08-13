@@ -59,14 +59,26 @@ jobs:
           chmod +x kubectl
           sudo mv kubectl /usr/local/bin/
           aws eks update-kubeconfig --name Johnmax25
+      #blue-green
+      - run: |
+          OLD_ENVIRONMENT=$(kubectl get service guitar-service -o jsonpath='{.spec.selecor.environment}' --ignore-not-found)
+          if [[ $OLD_ENVIRONMENT == "green" ]]; then
+            ENVIRONMENT="blue"
+          else
+            ENVIRONMENT="green"
+          fi
+          echo "ENVIRONMENT=$(echo $ENVIRONMENT)" >> $GITHUB_ENV
+          echo "OLD_ENVIRONMENT=$(echo $OLD_ENVIRONMENT)" >> $GITHUB_ENV
       - run: |
           envsubst < manifests/deployment.tmpl.yaml > manifests/deployment.yaml
-         # debugging
-         # cat manifests/deployment.yaml
-      - run: |
           kubectl apply -f manifests/deployment.yaml
-          kubectl apply -f manifests/service.yaml
+         #we need to see to debug
       - run: |
-          kubectl get pods -A
-
+          sleep 60
+      - run: |
+          envsubst < manifests/service.tmpl.yaml > manifests/service.yaml
+          kubectl apply -f manifests/service.yaml
+     #delete the blue once it's router
+      - run: |
+          kubectl delete deployment guitar-app-${ENVIRONMENT}
     

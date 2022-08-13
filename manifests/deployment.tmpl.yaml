@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: guitar-app
+  name: guitar-app-${ENVIRONMENT}
   labels:
     app: guitar-app
 spec:
@@ -9,10 +9,12 @@ spec:
   selector:
     matchLabels:
       app: guitar-app
+      environment: ${ENVIRONMENT}
   template:
     metadata:
       labels:
         app: guitar-app
+        environment: ${ENVIRONMENT}
     spec:
       containers:
       - name: guitar-app

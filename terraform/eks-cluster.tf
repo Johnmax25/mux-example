@@ -53,23 +53,5 @@ module "eks" {
         aws_security_group.node_group_two.id
       ]
     }
-
-    three = {
-      name = "node-group-3"
-
-      instance_types = ["t3.nano"]
-
-      min_size     = 1
-      max_size     = 1
-      desired_size = 1
-
-      pre_bootstrap_user_data = <<-EOT
-      echo 'foo bar'
-      EOT
-
-      vpc_security_group_ids = [
-        aws_security_group.node_group_one.id
-      ]
-    }
   }
 }
