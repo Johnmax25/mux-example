@@ -45,7 +45,7 @@ func main() {
 }
 
 func RootHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("<html><body><h1>John's Guitar Store</h1>"))
+	w.Write([]byte("<html><head><meta name=\"WAS\" content=\"d10fd3a22bec0058e0b36df7d607385a\"></head><body><h1>John's Guitar Store</h1>"))
 	w.Write([]byte("<h2><i>- Currently on Sale:</i></h2><ul>"))
 	for k, v := range guitars {
 		w.Write([]byte(fmt.Sprintf("<li>%s: %s</li>", k, v)))
