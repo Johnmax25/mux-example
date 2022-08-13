@@ -61,7 +61,7 @@ jobs:
           aws eks update-kubeconfig --name Johnmax25
       #blue-green
       - run: |
-          OLD_ENVIRONMENT=$(kubectl get service guitar-service -o jsonpath='{.spec.selecor.environment}' --ignore-not-found)
+          OLD_ENVIRONMENT=$(kubectl get service guitar-service -o jsonpath='{.spec.selector.environment}' --ignore-not-found)
           if [[ $OLD_ENVIRONMENT == "green" ]]; then
             ENVIRONMENT="blue"
           else
@@ -80,5 +80,5 @@ jobs:
           kubectl apply -f manifests/service.yaml
      #delete the blue once it's router
       - run: |
-          kubectl delete deployment guitar-app-${ENVIRONMENT}
+          kubectl delete deployment guitar-app-${{ env.OLD_ENVIRONMENT }}
     
